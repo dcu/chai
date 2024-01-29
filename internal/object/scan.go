@@ -28,9 +28,12 @@ func Scan(d types.Object, targets ...interface{}) error {
 		target := targets[i]
 		i++
 
-		ref := reflect.ValueOf(target)
-		if !ref.IsValid() {
-			return &ErrUnsupportedType{target, fmt.Sprintf("Parameter %d is not valid", i)}
+		ref, ok := target.(reflect.Value)
+		if !ok {
+			ref = reflect.ValueOf(target)
+			if !ref.IsValid() {
+				return &ErrUnsupportedType{target, fmt.Sprintf("Parameter %d is not valid", i)}
+			}
 		}
 
 		return scanValue(v, ref)
